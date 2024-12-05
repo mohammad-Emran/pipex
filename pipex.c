@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:43:54 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/03 14:29:27 by malja-fa         ###   ########.fr       */
+/*   Updated: 2024/12/05 13:56:32 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,12 @@
 
 void	init_childs(t_pipe *pipes, int *i, char **argv, char **envp)
 {
-	if (pipes->flag2 == -1)
-	{
-		create_child(pipes, 0, argv, envp);
-		close_pipes(pipes->pipefd, pipes->total_cmds);
-		close_fds(pipes->infile, pipes->outfile);
-		free(pipes->pipefd);
-		wait (NULL);
-		error("outfile error");
-	}
 	while (++(*i) < pipes->total_cmds)
 	{
 		if (pipes->flag == -1 && *i == 0)
 			continue ;
+		else if (pipes->flag2 == -1 && *i == pipes->total_cmds)
+			break ;
 		create_child(pipes, *i, argv, envp);
 	}
 }
@@ -110,7 +103,7 @@ int	main(int argc, char **argv, char **envp)
 	i = 0;
 	while (i++ < pipes.total_cmds)
 		wait(NULL);
-	if (pipes.flag == -1)
-		error("infile error");
+	if (pipes.flag == -1 || pipes.flag2 == -1)
+		error("file error");
 	return (0);
 }
