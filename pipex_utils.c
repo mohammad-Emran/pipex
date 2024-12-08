@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:44:15 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/03 14:29:34 by malja-fa         ###   ########.fr       */
+/*   Updated: 2024/12/08 15:06:52 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,15 @@ char	*find_path(char *command, char **envp)
 	{
 		join = ft_strjoin(paths[i], "/");
 		test_path = ft_strjoin(join, command);
+		if (!test_path)
+		{
+			i = -1;
+			while (paths[++i])
+				free (paths[i]);
+			free (paths);
+			free (join);
+			return (NULL);
+		}
 		free(join);
 		if (access(test_path, F_OK) == 0)
 		{
@@ -87,6 +96,8 @@ void	ft_excute(char **envp, char *argv, t_pipe *pipes)
 			free(command[i]);
 		free(pipes->pipefd);
 		free(command);
+		close_fds(pipes->infile, pipes->outfile);
+		close_pipes(pipes->pipefd,pipes->total_cmds);
 		error("path error");
 	}
 	if (execve(path, command, envp) == -1)

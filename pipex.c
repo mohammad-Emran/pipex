@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:43:54 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/05 13:56:32 by malja-fa         ###   ########.fr       */
+/*   Updated: 2024/12/08 12:01:43 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,12 @@ void	create_child(t_pipe *pipex, int i, char **argv, char **envp)
 
 	id = fork();
 	if (id == -1)
+	{
+		free(pipex->pipefd);
+		close_fds(pipex->infile, pipex->outfile);
+		close_pipes(pipex->pipefd, pipex->total_cmds);
 		error("child error");
+	}
 	if (id == 0)
 	{
 		redirect_files(pipex, i);
@@ -61,6 +66,7 @@ void	open_files(char **argv, t_pipe *pipex, int argc)
 	pipex->infile = open(argv[1], O_RDONLY);
 	if (pipex->infile == -1)
 	{
+		perror("Error");
 		pipex->infile = open("/dev/null", O_RDONLY);
 		if (pipex->infile == -1)
 		{
@@ -72,6 +78,7 @@ void	open_files(char **argv, t_pipe *pipex, int argc)
 	pipex->outfile = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (pipex->outfile == -1)
 	{
+		perror("Error");
 		pipex->outfile = open("/dev/null", O_WRONLY);
 		pipex->flag2 = -1;
 		if (pipex->outfile == -1)
@@ -89,10 +96,7 @@ int	main(int argc, char **argv, char **envp)
 	pipes.total_cmds = argc - 3;
 	pipes.pipefd = (int *)malloc(sizeof(int) * 2 * (pipes.total_cmds - 1));
 	if (!pipes.pipefd)
-	{
-		free(pipes.pipefd);
 		error("pipefd erorr");
-	}
 	open_files(argv, &pipes, argc);
 	i = -1;
 	init_pipe(&pipes);
@@ -103,7 +107,5 @@ int	main(int argc, char **argv, char **envp)
 	i = 0;
 	while (i++ < pipes.total_cmds)
 		wait(NULL);
-	if (pipes.flag == -1 || pipes.flag2 == -1)
-		error("file error");
 	return (0);
 }

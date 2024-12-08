@@ -1,27 +1,34 @@
+NAME = pipex
 CC = cc
-NAME= pipex
-CFLAGS = -Wall -Werror -Wextra 
-SRCS = pipex.c pipex_utils.c pcloses.c
+CFLAGS = -Wall -Werror -Wextra -g
+SRCS = pcloses.c pipex_utils.c pipex.c
 
-OBJECTS = $(SRCS:.c=.o)
-LIBFT_DIR = ./libft
-LIBFT= $(LIBFT_DIR)/libft.a
-INCLUDE= -I./
+OBJDIR = obj
+SRCDIR = src
+OBJS = $(SRCS:%.c=$(OBJDIR)/%.o)
+LIBFT = ./libft
+INCLUDE = -I./includes/
 
-all:$(NAME)
+all: $(NAME)
 
-$(NAME): $(OBJECTS)
-	@make -C $(LIBFT_DIR)
-	$(CC) $(CFLAGS) $(OBJECTS) -L$(LIBFT_DIR) -lft -o $(NAME)
+$(NAME): $(OBJS) $(LIBFT)/libft.a 
+	$(CC) $(CFLAGS) $(OBJS) -L$(LIBFT) -lft -o $(NAME)
 
-%.o: %.c
+$(LIBFT)/libft.a:
+	@make -C $(LIBFT)
+
+
+$(OBJDIR)/%.o: %.c
+	@mkdir -p $(OBJDIR)
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
-clean: 
-	rm -f $(OBJECTS)
-	@make clean -C $(LIBFT_DIR)
+
+clean:
+	rm -rf $(OBJDIR)
+	@make clean -C $(LIBFT)
+
 fclean: clean
 	rm -f $(NAME)
-	@make fclean -C $(LIBFT_DIR)
+	@make fclean -C $(LIBFT)
 
 re: fclean all
 
