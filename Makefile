@@ -1,6 +1,6 @@
 NAME = pipex
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -g
+CFLAGS = -Wall -Werror -Wextra 
 SRCS = pcloses.c pipex_utils.c pipex.c
 
 OBJDIR = obj
