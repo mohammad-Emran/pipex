@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:44:15 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/08 15:06:52 by malja-fa         ###   ########.fr       */
+/*   Updated: 2024/12/10 10:41:59 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,39 +46,20 @@ void	init_pipe(t_pipe *pipes)
 char	*find_path(char *command, char **envp)
 {
 	char	**paths;
+	char	*valid_path;
 	int		i;
-	char	*test_path;
-	char	*join;
 
 	i = 0;
-	while (ft_strnstr(envp[i], "PATH", 4) == 0)
+	while (envp[i] && ft_strnstr(envp[i], "PATH", 4) == 0)
 		i++;
+	if (!envp[i])
+		return (NULL);
 	paths = ft_split(envp[i] + 5, ':');
-	i = 0;
-	while (paths[i])
-	{
-		join = ft_strjoin(paths[i], "/");
-		test_path = ft_strjoin(join, command);
-		if (!test_path)
-		{
-			i = -1;
-			while (paths[++i])
-				free (paths[i]);
-			free (paths);
-			free (join);
-			return (NULL);
-		}
-		free(join);
-		if (access(test_path, F_OK) == 0)
-		{
-			ft_free(paths);
-			return (test_path);
-		}
-		free(test_path);
-		i++;
-	}
+	if (!paths)
+		return (NULL);
+	valid_path = find_valid_path(paths, command);
 	ft_free(paths);
-	return (NULL);
+	return (valid_path);
 }
 
 void	ft_excute(char **envp, char *argv, t_pipe *pipes)
@@ -97,7 +78,7 @@ void	ft_excute(char **envp, char *argv, t_pipe *pipes)
 		free(pipes->pipefd);
 		free(command);
 		close_fds(pipes->infile, pipes->outfile);
-		close_pipes(pipes->pipefd,pipes->total_cmds);
+		close_pipes(pipes->pipefd, pipes->total_cmds);
 		error("path error");
 	}
 	if (execve(path, command, envp) == -1)

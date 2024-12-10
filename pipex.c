@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:43:54 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/08 12:01:43 by malja-fa         ###   ########.fr       */
+/*   Updated: 2024/12/10 10:41:55 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,29 @@ void	init_childs(t_pipe *pipes, int *i, char **argv, char **envp)
 	}
 }
 
-void	redirect_files(t_pipe *pipex, int i)
+void	*redirect_files(t_pipe *pipex, int i)
 {
 	if (i == 0)
 	{
-		dup2(pipex->infile, STDIN_FILENO);
+		if (dup2(pipex->infile, STDIN_FILENO) == -1)
+			return (NULL);
 	}
 	else
-		dup2(pipex->pipefd[(i - 1) * 2], STDIN_FILENO);
+	{
+		if (dup2(pipex->pipefd[(i - 1) * 2], STDIN_FILENO) == -1)
+			return (NULL);
+	}
 	if (i < pipex->total_cmds - 1)
-		dup2(pipex->pipefd[i * 2 + 1], STDOUT_FILENO);
+	{
+		if (dup2(pipex->pipefd[i * 2 + 1], STDOUT_FILENO) == -1)
+			return (NULL);
+	}
 	else
-		dup2(pipex->outfile, STDOUT_FILENO);
+	{
+		if (dup2(pipex->outfile, STDOUT_FILENO) == -1)
+			return (NULL);
+	}
+	return ((void *)1);
 }
 
 void	create_child(t_pipe *pipex, int i, char **argv, char **envp)
@@ -52,7 +63,12 @@ void	create_child(t_pipe *pipex, int i, char **argv, char **envp)
 	}
 	if (id == 0)
 	{
-		redirect_files(pipex, i);
+		if (!(redirect_files(pipex, i)))
+		{
+			close_fds(pipex->infile, pipex->outfile);
+			close_pipes(pipex->pipefd, pipex->total_cmds);
+			error("Error");
+		}
 		close_pipes(pipex->pipefd, pipex->total_cmds);
 		ft_excute(envp, argv[i + 2], pipex);
 		exit(EXIT_SUCCESS);

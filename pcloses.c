@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 08:48:33 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/08 15:06:58 by malja-fa         ###   ########.fr       */
+/*   Updated: 2024/12/10 10:42:03 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,4 +35,36 @@ void	fd_errors(t_pipe *pipes)
 	free(pipes->pipefd);
 	close(pipes->infile);
 	error("Failed to open /dev/null for outfile");
+}
+
+char	*join_paths(char *path, char *command)
+{
+	char	*joined_path;
+	char	*full_path;
+
+	joined_path = ft_strjoin(path, "/");
+	if (!joined_path)
+		return (NULL);
+	full_path = ft_strjoin(joined_path, command);
+	free(joined_path);
+	return (full_path);
+}
+
+char	*find_valid_path(char **paths, char *command)
+{
+	char	*test_path;
+	int		i;
+
+	i = 0;
+	while (paths[i])
+	{
+		test_path = join_paths(paths[i], command);
+		if (!test_path)
+			return (NULL);
+		if (access(test_path, F_OK) == 0)
+			return (test_path);
+		free(test_path);
+		i++;
+	}
+	return (NULL);
 }
