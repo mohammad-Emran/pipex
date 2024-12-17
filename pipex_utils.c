@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: boom <boom@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:44:15 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/10 10:41:59 by malja-fa         ###   ########.fr       */
+/*   Updated: 2024/12/17 11:58:44 by boom             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include <pipex.h>
 
 void	error(char *str)
 {
@@ -66,25 +66,26 @@ void	ft_excute(char **envp, char *argv, t_pipe *pipes)
 {
 	char	**command;
 	char	*path;
-	int		i;
 
 	command = ft_split(argv, ' ');
+	if (!command)
+	{
+		combine(pipes, command, 2);
+		error ("split error");
+	}
 	path = find_path(command[0], envp);
-	i = -1;
 	if (!path)
 	{
-		while (command[++i])
-			free(command[i]);
-		free(pipes->pipefd);
-		free(command);
-		close_fds(pipes->infile, pipes->outfile);
-		close_pipes(pipes->pipefd, pipes->total_cmds);
-		error("path error");
+		write (2, command[0], ft_strlen(command[0]));
+		write (2, ": command not found\n", 21);
+		combine(pipes, command, 1);
+		exit(127);
 	}
 	if (execve(path, command, envp) == -1)
 	{
+		perror("exec error");
+		combine(pipes, command, 1);
 		free(path);
-		free(pipes->pipefd);
-		error("exec error");
+		exit(EXIT_FAILURE);
 	}
 }

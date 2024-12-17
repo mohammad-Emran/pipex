@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include <pipex.h>
 
 void	init_childs(t_pipe *pipes, int *i, char **argv, char **envp)
 {
@@ -67,6 +67,7 @@ void	create_child(t_pipe *pipex, int i, char **argv, char **envp)
 		{
 			close_fds(pipex->infile, pipex->outfile);
 			close_pipes(pipex->pipefd, pipex->total_cmds);
+			free(pipex->pipefd);
 			error("Error");
 		}
 		close_pipes(pipex->pipefd, pipex->total_cmds);
@@ -82,7 +83,7 @@ void	open_files(char **argv, t_pipe *pipex, int argc)
 	pipex->infile = open(argv[1], O_RDONLY);
 	if (pipex->infile == -1)
 	{
-		perror("Error");
+		perror("infile");
 		pipex->infile = open("/dev/null", O_RDONLY);
 		if (pipex->infile == -1)
 		{
@@ -94,7 +95,7 @@ void	open_files(char **argv, t_pipe *pipex, int argc)
 	pipex->outfile = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (pipex->outfile == -1)
 	{
-		perror("Error");
+		perror("outfile");
 		pipex->outfile = open("/dev/null", O_WRONLY);
 		pipex->flag2 = -1;
 		if (pipex->outfile == -1)
@@ -108,7 +109,10 @@ int	main(int argc, char **argv, char **envp)
 	int		i;
 
 	if (argc < 5)
-		error("wrong number of arguments");
+	{
+		write (2, "wrong number of arguments\n", 27);
+		return (1);
+	}
 	pipes.total_cmds = argc - 3;
 	pipes.pipefd = (int *)malloc(sizeof(int) * 2 * (pipes.total_cmds - 1));
 	if (!pipes.pipefd)
@@ -122,6 +126,6 @@ int	main(int argc, char **argv, char **envp)
 	free(pipes.pipefd);
 	i = 0;
 	while (i++ < pipes.total_cmds)
-		wait(NULL);
+		waitpid(-1, NULL, 0);
 	return (0);
 }

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include <pipex.h>
 
 void	close_fds(int infile, int outfile)
 {
@@ -26,8 +26,15 @@ void	close_pipes(int *pipefd, int total_cmds)
 
 	i = 0;
 	while (i < 2 * (total_cmds - 1))
-		if (close(pipefd[i++]))
-			error("close pipe error");
+	{
+		if (pipefd[i] >= 0)
+		{
+			if (close(pipefd[i]) == -1)
+				perror("close pipe error");
+			pipefd[i] = -1;
+		}
+		i++;
+	}
 }
 
 void	fd_errors(t_pipe *pipes)

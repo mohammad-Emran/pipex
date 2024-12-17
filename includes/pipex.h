@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: boom <boom@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:44:03 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/10 10:42:26 by malja-fa         ###   ########.fr       */
+/*   Updated: 2024/12/17 12:04:27 by boom             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
 
-# include "./libft/libft.h"
+# include "../libft/libft.h"
 # include <fcntl.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -45,4 +45,5 @@ void	fd_errors(t_pipe *pipes);
 void	ft_free(char **ss);
 char	*find_valid_path(char **paths, char *command);
 char	*join_paths(char *path, char *command);
+void	combine(t_pipe *pipes, char **command, int flag);
 #endif
