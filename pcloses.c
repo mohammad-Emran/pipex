@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 08:48:33 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/10 10:42:03 by malja-fa         ###   ########.fr       */
+/*   Updated: 2024/12/18 10:19:54 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ char	*find_valid_path(char **paths, char *command)
 		test_path = join_paths(paths[i], command);
 		if (!test_path)
 			return (NULL);
-		if (access(test_path, F_OK) == 0)
+		if (access(test_path, F_OK | X_OK) == 0)
 			return (test_path);
 		free(test_path);
 		i++;
