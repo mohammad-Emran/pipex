@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: boom <boom@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:44:03 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/17 12:04:27 by boom             ###   ########.fr       */
+/*   Updated: 2024/12/19 12:20:33 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <string.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include <errno.h>
 
 typedef struct s_pipe
 {
@@ -40,10 +41,12 @@ char	*find_path(char *command, char **envp);
 void	ft_excute(char **envp, char *argv, t_pipe *pipes);
 void	init_pipe(t_pipe *pipes);
 void	close_fds(int infile, int outfile);
-void	init_childs(t_pipe *pipes, int *i, char **argv, char **envp);
+void	init_childs(t_pipe *pipes, char **argv, char **envp);
 void	fd_errors(t_pipe *pipes);
 void	ft_free(char **ss);
 char	*find_valid_path(char **paths, char *command);
 char	*join_paths(char *path, char *command);
 void	combine(t_pipe *pipes, char **command, int flag);
+int		init_pipex(int argc, t_pipe *pipes, char **argv);
+int		process_exit_status(int status);
 #endif

@@ -6,21 +6,24 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:43:54 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/10 10:41:55 by malja-fa         ###   ########.fr       */
+/*   Updated: 2024/12/19 12:21:36 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <pipex.h>
 
-void	init_childs(t_pipe *pipes, int *i, char **argv, char **envp)
+void	init_childs(t_pipe *pipes, char **argv, char **envp)
 {
-	while (++(*i) < pipes->total_cmds)
+	int	i;
+
+	i = -1;
+	while (++i < pipes->total_cmds)
 	{
-		if (pipes->flag == -1 && *i == 0)
+		if (pipes->flag == -1 && i == 0)
 			continue ;
-		else if (pipes->flag2 == -1 && *i == pipes->total_cmds)
+		else if (pipes->flag2 == -1 && i == pipes->total_cmds)
 			break ;
-		create_child(pipes, *i, argv, envp);
+		create_child(pipes, i, argv, envp);
 	}
 }
 
@@ -83,7 +86,7 @@ void	open_files(char **argv, t_pipe *pipex, int argc)
 	pipex->infile = open(argv[1], O_RDONLY);
 	if (pipex->infile == -1)
 	{
-		perror("infile");
+		perror(argv[1]);
 		pipex->infile = open("/dev/null", O_RDONLY);
 		if (pipex->infile == -1)
 		{
@@ -95,37 +98,38 @@ void	open_files(char **argv, t_pipe *pipex, int argc)
 	pipex->outfile = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (pipex->outfile == -1)
 	{
-		perror("outfile");
+		perror(argv[argc - 1]);
 		pipex->outfile = open("/dev/null", O_WRONLY);
 		pipex->flag2 = -1;
 		if (pipex->outfile == -1)
 			fd_errors(pipex);
 	}
 }
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_pipe	pipes;
-	int		i;
+	int		status;
 
 	if (argc < 5)
 	{
-		write (2, "wrong number of arguments\n", 27);
+		write(2, "wrong number of arguments\n", 27);
 		return (1);
 	}
-	pipes.total_cmds = argc - 3;
-	pipes.pipefd = (int *)malloc(sizeof(int) * 2 * (pipes.total_cmds - 1));
-	if (!pipes.pipefd)
-		error("pipefd erorr");
-	open_files(argv, &pipes, argc);
-	i = -1;
-	init_pipe(&pipes);
-	init_childs(&pipes, &i, argv, envp);
-	close_pipes(pipes.pipefd, pipes.total_cmds);
-	close_fds(pipes.infile, pipes.outfile);
-	free(pipes.pipefd);
-	i = 0;
-	while (i++ < pipes.total_cmds)
-		waitpid(-1, NULL, 0);
-	return (0);
+	if (!init_pipex(argc, &pipes, argv))
+		return (1);
+	init_childs(&pipes, argv, envp);
+	combine(&pipes, NULL, 2);
+	while (pipes.total_cmds > 0)
+	{
+		if (waitpid(-1, &status, 0) == -1)
+		{
+			if (errno == ECHILD)
+				break; 
+			perror("waitpid error");
+			return (1);
+		}
+		pipes.total_cmds--;
+	}
+	status = process_exit_status(status);
+	return (status);
 }
