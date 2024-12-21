@@ -71,13 +71,13 @@ void	ft_excute(char **envp, char *argv, t_pipe *pipes)
 	if (!command)
 	{
 		combine(pipes, command, 2);
-		error ("split error");
+		error("split error");
 	}
 	path = find_path(command[0], envp);
 	if (!path)
 	{
-		write (2, command[0], ft_strlen(command[0]));
-		write (2, ": command not found\n", 21);
+		write(2, command[0], ft_strlen(command[0]));
+		write(2, ": command not found\n", 21);
 		combine(pipes, command, 1);
 		exit(127);
 	}

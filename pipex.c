@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:43:54 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/19 12:21:36 by malja-fa         ###   ########.fr       */
+/*   Updated: 2024/12/21 08:24:15 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	*redirect_files(t_pipe *pipex, int i)
 
 void	create_child(t_pipe *pipex, int i, char **argv, char **envp)
 {
-	int	id;
+	pid_t	id;
 
 	id = fork();
 	if (id == -1)
@@ -77,6 +77,8 @@ void	create_child(t_pipe *pipex, int i, char **argv, char **envp)
 		ft_excute(envp, argv[i + 2], pipex);
 		exit(EXIT_SUCCESS);
 	}
+	if (i == pipex->total_cmds - 1)
+		pipex->last = id;
 }
 
 void	open_files(char **argv, t_pipe *pipex, int argc)
@@ -105,11 +107,15 @@ void	open_files(char **argv, t_pipe *pipex, int argc)
 			fd_errors(pipex);
 	}
 }
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_pipe	pipes;
 	int		status;
+	int		last_pid_status;
 
+	status = 0;
+	last_pid_status = -1;
 	if (argc < 5)
 	{
 		write(2, "wrong number of arguments\n", 27);
@@ -119,17 +125,6 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	init_childs(&pipes, argv, envp);
 	combine(&pipes, NULL, 2);
-	while (pipes.total_cmds > 0)
-	{
-		if (waitpid(-1, &status, 0) == -1)
-		{
-			if (errno == ECHILD)
-				break; 
-			perror("waitpid error");
-			return (1);
-		}
-		pipes.total_cmds--;
-	}
-	status = process_exit_status(status);
+	status = wait_child(&pipes, status, last_pid_status);
 	return (status);
 }

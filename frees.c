@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 08:06:26 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/19 12:13:53 by malja-fa         ###   ########.fr       */
+/*   Updated: 2024/12/21 08:23:26 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,4 +48,29 @@ int	process_exit_status(int status)
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
 	return (1);
+}
+
+int	wait_child(t_pipe *pipes, int status, int last_pid)
+{
+	pid_t	wpid;
+
+	while (pipes->total_cmds > 0)
+	{
+		wpid = waitpid(-1, &status, 0);
+		if (wpid == -1)
+		{
+			if (errno == ECHILD)
+				break ;
+			perror("waitpid error");
+			return (1);
+		}
+		if (wpid == pipes->last)
+			last_pid = status;
+		pipes->total_cmds--;
+	}
+	if (last_pid != -1)
+		status = process_exit_status(last_pid);
+	else
+		status = process_exit_status(status);
+	return (status);
 }
