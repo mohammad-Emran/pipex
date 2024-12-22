@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:44:15 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/18 11:57:38 by malja-fa         ###   ########.fr       */
+/*   Updated: 2024/12/22 07:32:49 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	init_pipe(t_pipe *pipes)
 	{
 		if (pipe(pipes->pipefd + i * 2) == -1)
 		{
+			close_fds(pipes->infile, pipes->outfile);
 			free(pipes->pipefd);
 			error("pipe error");
 		}
