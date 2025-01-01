@@ -6,16 +6,28 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 08:06:26 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/21 08:23:26 by malja-fa         ###   ########.fr       */
+/*   Updated: 2025/01/01 09:17:53 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <pipex.h>
 
+int	is_absolute_path(char *command)
+{
+	if (!command)
+		return (0);
+	if (command[0] == '/' || ft_strncmp(command, "./", 2) == 0
+		|| ft_strncmp(command, "../", 3) == 0)
+		return (1);
+	return (0);
+}
+
 void	combine(t_pipe *pipes, char **command, int flag)
 {
 	if (flag == 1)
 	{
+		write(2, command[0], ft_strlen(command[0]));
+		write(2, ": command not found\n", 21);
 		ft_free(command);
 		close_pipes(pipes->pipefd, pipes->total_cmds);
 		close_fds(pipes->infile, pipes->outfile);
@@ -43,9 +55,9 @@ int	init_pipex(int argc, t_pipe *pipes, char **argv)
 	return (1);
 }
 
-int	process_exit_status(int status)
+int	process_exit_status(int status, t_pipe *pipes)
 {
-	if (WIFEXITED(status))
+	if (WIFEXITED(status) && pipes->flag2 != -1)
 		return (WEXITSTATUS(status));
 	return (1);
 }
@@ -69,8 +81,8 @@ int	wait_child(t_pipe *pipes, int status, int last_pid)
 		pipes->total_cmds--;
 	}
 	if (last_pid != -1)
-		status = process_exit_status(last_pid);
+		status = process_exit_status(last_pid, pipes);
 	else
-		status = process_exit_status(status);
+		status = process_exit_status(status, pipes);
 	return (status);
 }

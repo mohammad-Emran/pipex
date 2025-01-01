@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:44:15 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/22 07:32:49 by malja-fa         ###   ########.fr       */
+/*   Updated: 2025/01/01 09:17:41 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,12 @@ void	ft_excute(char **envp, char *argv, t_pipe *pipes)
 		combine(pipes, command, 2);
 		error("split error");
 	}
-	path = find_path(command[0], envp);
+	if (is_absolute_path(command[0]))
+		path = command[0];
+	else
+		path = find_path(command[0], envp);
 	if (!path)
 	{
-		write(2, command[0], ft_strlen(command[0]));
-		write(2, ": command not found\n", 21);
 		combine(pipes, command, 1);
 		exit(127);
 	}

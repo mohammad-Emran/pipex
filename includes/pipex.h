@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:44:03 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/12/21 08:37:09 by malja-fa         ###   ########.fr       */
+/*   Updated: 2025/01/01 09:02:25 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ char		*find_valid_path(char **paths, char *command);
 char		*join_paths(char *path, char *command);
 void		combine(t_pipe *pipes, char **command, int flag);
 int			init_pipex(int argc, t_pipe *pipes, char **argv);
-int			process_exit_status(int status);
+int			process_exit_status(int status, t_pipe *pipes);
 int			wait_child(t_pipe *pipes, int status, int last_pid);
+int			is_absolute_path(char *command);
 #endif
