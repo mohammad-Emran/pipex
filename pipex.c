@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 09:43:54 by malja-fa          #+#    #+#             */
-/*   Updated: 2025/01/01 08:58:47 by malja-fa         ###   ########.fr       */
+/*   Updated: 2025/01/01 09:39:46 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	init_childs(t_pipe *pipes, char **argv, char **envp)
 	i = -1;
 	while (++i < pipes->total_cmds)
 	{
-		if (pipes->flag == -1 && i == 1)
+		if (pipes->flag == -1 && i == 0)
 			continue ;
 		else if (pipes->flag2 == -1 && i == pipes->total_cmds - 1)
 			continue ;
@@ -116,6 +116,7 @@ int	main(int argc, char **argv, char **envp)
 
 	status = 0;
 	last_pid_status = -1;
+	pipes.last = 0;
 	if (argc < 5)
 	{
 		write(2, "wrong number of arguments\n", 27);

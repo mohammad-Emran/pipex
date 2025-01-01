@@ -6,7 +6,7 @@
 /*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 08:06:26 by malja-fa          #+#    #+#             */
-/*   Updated: 2025/01/01 09:17:53 by malja-fa         ###   ########.fr       */
+/*   Updated: 2025/01/01 09:37:11 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ int	wait_child(t_pipe *pipes, int status, int last_pid)
 {
 	pid_t	wpid;
 
+	wpid = 0;
 	while (pipes->total_cmds > 0)
 	{
 		wpid = waitpid(-1, &status, 0);
