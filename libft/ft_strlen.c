@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malja-fa <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: malja-fa <malja-fa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/20 12:51:30 by malja-fa          #+#    #+#             */
-/*   Updated: 2024/06/20 12:55:59 by malja-fa         ###   ########.fr       */
+/*   Updated: 2025/01/05 10:08:06 by malja-fa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ size_t	ft_strlen(const char *str)
 	size_t	size;
 
 	size = 0;
+	if (!str)
+		return (0);
 	while (str[size] != '\0')
 	{
 		size++;
